@@ -1,0 +1,248 @@
+openapi: 3.0.3
+info:
+  description: API del servizio monolith per l'esercitazione 12
+  version: "1.0.0"
+  title: "Esercitazione 12"
+  contact:
+    email: "carminecolarusso93@gmail.com"
+
+tags:
+  - name: "customers"
+    description: "Operations about the bank customers"
+  - name: "accounts"
+    description: "Everything about the bank accounts"
+
+
+servers:
+  - url: http://bank-assd.apps-crc.testing/Bank/api-v1/bank/
+  - url: http://bank-api-gateway-assd.apps-crc.testing/Bank/api-v1/bank/
+
+
+paths:
+  ##################### accounts ###################
+  /accounts:
+    post:
+      tags:
+        - "accounts"
+      summary: "create Account"
+      description: ""
+      parameters:
+        - name: cf
+          in: query
+          description: fiscal code
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              description: amount
+              type: number
+      responses:
+        '201':
+          $ref: '#/components/responses/201Created'
+        '500':
+          $ref: '#/components/responses/500Generic'
+
+  /accounts/{accountId}/blance:
+    get:
+      tags:
+        - "accounts"
+      summary: "get balance"
+      description: ""
+      parameters:
+        - name: accountId
+          in: path
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: OK, The balance of required account
+          content:
+            text/plain:
+              schema:
+                type: number
+        '500':
+          $ref: '#/components/responses/500Generic'
+  /accounts/{accountId}/deposits:
+    post:
+      tags:
+        - "accounts"
+      summary: "deposit"
+      description: ""
+      parameters:
+        - name: accountId
+          in: path
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              description: amount
+              type: number
+      responses:
+        '200':
+          $ref: '#/components/responses/200NoBody'
+        '500':
+          $ref: '#/components/responses/500Generic'
+  /accounts/{accountId}/withdraws:
+    post:
+      tags:
+        - "accounts"
+      summary: "withdraws"
+      description: ""
+      parameters:
+        - name: accountId
+          in: path
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              description: amount
+              type: number
+      responses:
+        '200':
+          $ref: '#/components/responses/200NoBody'
+        '500':
+          $ref: '#/components/responses/500Generic'
+  /accounts/transfers:
+    post:
+      tags:
+        - "accounts"
+      summary: "transfer money"
+      description: ""
+      parameters:
+        - name: source
+          description:  source Account
+          in: query
+          schema:
+            type: integer
+          required: true
+        - name: destination
+          description: destination Account
+          in: query
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              description: amount
+              type: number
+      responses:
+        '200':
+          $ref: '#/components/responses/200NoBody'
+        '500':
+          $ref: '#/components/responses/500Generic'
+
+  ##################### cutomers ###################
+  /customers:
+    post:
+      tags:
+        - "customers"
+      summary: "create Customer"
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '201':
+          $ref: '#/components/responses/201Created'
+        '500':
+          $ref: '#/components/responses/500Generic'
+  /customers/{custCF}:
+    get:
+      tags:
+        - "customers"
+      summary: "get Customer"
+      description: ""
+      parameters:
+        - name: custCF
+          in: path
+          description: fiscal code
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '500':
+          $ref: '#/components/responses/500Generic'
+  /customers/{custCF}/accounts:
+    post:
+      tags:
+        - "customers"
+        - "accounts"
+      summary: "create Account of Customer"
+      description: ""
+      parameters:
+        - name: custCF
+          in: path
+          description: fiscal code
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              description: amount
+              type: number
+      responses:
+        '201':
+          $ref: '#/components/responses/201Created'
+        '500':
+          $ref: '#/components/responses/500Generic'
+components:
+  schemas:
+    Customer:
+      type: "object"
+      properties:
+        cf:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+    Account:
+      type: object
+      properties:
+        c:
+          $ref: '#/components/schemas/Customer'
+        a:
+          type: number
+
+  responses:
+    200NoBody:
+      description: OK
+    201Created:
+      description: CREATED
+    500Generic:
+      description: INTERNAL SERVER ERROR
+
+
+
+
